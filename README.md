@@ -6,6 +6,16 @@ Remove bloatware do Windows 10/11 com segurança e persistência.
 ![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/main.png" alt="Tela Principal" width="800">
+</p>
+
+<p align="center">
+  <img src="screenshots/removing.png" alt="Removendo Bloatwares" width="800">
+</p>
+
 ## Funcionalidades
 
 - **Scan automático** - Detecta bloatwares instalados, processos em execução e serviços

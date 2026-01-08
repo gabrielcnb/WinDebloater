@@ -498,6 +498,23 @@ class BloatwareDatabase:
                 can_reinstall=True
             ),
             BloatwareItem(
+                id="edge_game_assist",
+                name="Edge Game Assist",
+                description="Assistente de jogos do Edge. Inútil se não usa Edge para jogos.",
+                category=Category.PROCESSES,
+                risk_level=RiskLevel.SAFE,
+                package_name="Microsoft.Edge.GameAssist",
+                process_name="GameAssist",
+                service_name=None,
+                registry_keys=[],
+                removal_commands=[
+                    "Get-AppxPackage -Name 'Microsoft.Edge.GameAssist' | Remove-AppxPackage",
+                    "Get-AppxPackage -Name 'Microsoft.Edge.GameAssist' -AllUsers | Remove-AppxPackage -AllUsers",
+                    "Stop-Process -Name 'GameAssist' -Force"
+                ],
+                can_reinstall=True
+            ),
+            BloatwareItem(
                 id="search_host",
                 name="SearchHost",
                 description="Interface de pesquisa do Windows. Usa Edge WebView.",
