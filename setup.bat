@@ -3,6 +3,9 @@ chcp 65001 >nul
 title WinDebloater - Setup
 color 0A
 
+:: Vai para o diretório do script
+cd /d "%~dp0"
+
 echo.
 echo  ================================================
 echo     WinDebloater - Instalador
@@ -41,7 +44,7 @@ echo.
 echo Instalando dependências...
 echo.
 
-pip install -r requirements.txt
+pip install -r "%~dp0requirements.txt"
 
 if %errorlevel% neq 0 (
     echo.
@@ -59,7 +62,7 @@ set /p run="Deseja executar o WinDebloater agora? (S/N): "
 if /i "%run%"=="S" (
     echo.
     echo Iniciando WinDebloater...
-    python src\main.py
+    python "%~dp0src\main.py"
 )
 
 pause
