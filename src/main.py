@@ -87,9 +87,6 @@ def main():
     app.setApplicationName("WinDebloater")
     app.setOrganizationName("WinDebloater")
 
-    # Configura DPI
-    app.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
-
     # Ícone (se existir)
     icon_path = os.path.join(os.path.dirname(__file__), "..", "assets", "icon.ico")
     if os.path.exists(icon_path):
