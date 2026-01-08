@@ -304,13 +304,13 @@ class BloatwareRemover:
         # Resumo
         successful = sum(1 for r in results if r.success)
         failed = total - successful
-        ram_saved = sum(r.item.id for r in results if r.success)  # Placeholder
 
         self._log(f"\n{'='*50}")
         self._log(f"RESUMO")
         self._log(f"{'='*50}")
         self._log(f"Removidos com sucesso: {successful}/{total}")
-        self._log(f"Falharam: {failed}/{total}")
+        if failed > 0:
+            self._log(f"Falharam: {failed}/{total}")
 
         return results
 
