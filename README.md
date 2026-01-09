@@ -9,17 +9,20 @@ Remove bloatware do Windows 10/11 com segurança e persistência.
 ## Screenshots
 
 <p align="center">
-  <img src="screenshots/main.png" alt="Tela Principal" width="800">
+  <img src="screenshots/01-welcome.png" alt="Tela de Boas-vindas" width="800">
+  <br><em>Wizard de configuração inicial</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/removing.png" alt="Removendo Bloatwares" width="800">
+  <img src="screenshots/04-main.png" alt="Tela Principal" width="800">
+  <br><em>Interface principal com lista de bloatwares detectados</em>
 </p>
 
 ## Funcionalidades
 
 - **Scan automático** - Detecta bloatwares instalados, processos em execução e serviços
 - **Remoção persistente** - Usa 8 técnicas diferentes para garantir remoção completa
+- **Processos customizados** - Adicione processos que continuam voltando, com proteção contra remoção de processos críticos
 - **Backup automático** - Cria backup antes de qualquer alteração
 - **Restauração fácil** - Restaure itens removidos com um clique
 - **Interface amigável** - Dark theme moderno e fácil de usar
@@ -93,6 +96,21 @@ python src/main.py
 | 🟢 | Seguro | Pode remover sem problemas |
 | 🟡 | Cautela | Pode afetar algumas funcionalidades |
 | 🔴 | Arriscado | Pode causar instabilidade |
+
+### Adicionando Processos Customizados
+
+Se algum processo continua voltando após a remoção:
+
+1. Clique em **🎯 Adicionar Processo**
+2. Digite o nome do processo (sem .exe)
+3. O sistema valida automaticamente:
+   - ✅ **Verde** - Processo pode ser removido
+   - ⚠️ **Laranja** - Atenção necessária (aplicativo comum)
+   - ❌ **Vermelho** - Bloqueado (processo crítico do Windows)
+4. Adicione uma descrição opcional
+5. Confirme a adição
+
+**Proteção de Segurança**: O sistema bloqueia automaticamente processos críticos do Windows (explorer, svchost, csrss, etc.) para evitar danos ao sistema.
 
 ## Técnicas de Remoção
 
