@@ -17,7 +17,9 @@ from core.database import BloatwareDatabase, Category, RiskLevel
 from core.scanner import BloatwareScanner, DetectedBloatware
 from core.remover import BloatwareRemover
 from core.restore import BackupManager
+from core.custom_bloat import CustomBloatwareManager
 from ui.dialogs import ConfirmDialog, RestoreDialog
+from ui.custom_dialog import AddCustomProcessDialog
 
 
 class ScanThread(QThread):
@@ -68,6 +70,7 @@ class MainWindow(QMainWindow):
         self.scanner = BloatwareScanner()
         self.remover = BloatwareRemover()
         self.backup_manager = BackupManager()
+        self.custom_manager = CustomBloatwareManager()
 
         self.detected_items: list[DetectedBloatware] = []
         self.selected_items: list[DetectedBloatware] = []
@@ -164,6 +167,12 @@ class MainWindow(QMainWindow):
         self.restore_btn.setObjectName("restoreButton")
         self.restore_btn.clicked.connect(self._on_restore)
         btn_layout.addWidget(self.restore_btn)
+
+        self.custom_btn = QPushButton("🎯 Adicionar Processo")
+        self.custom_btn.setObjectName("customButton")
+        self.custom_btn.setToolTip("Adicionar processo customizado persistente")
+        self.custom_btn.clicked.connect(self._on_add_custom)
+        btn_layout.addWidget(self.custom_btn)
 
         layout.addLayout(btn_layout)
 
@@ -483,6 +492,28 @@ class MainWindow(QMainWindow):
         self._update_status("Erro na remoção")
 
         QMessageBox.critical(self, "Erro", f"Erro durante a remoção:\n{error}")
+
+    def _on_add_custom(self):
+        """Abre diálogo para adicionar processo customizado."""
+        dialog = AddCustomProcessDialog(self)
+
+        if dialog.exec():
+            # Usuário confirmou
+            process = dialog.process_name
+            description = dialog.description
+
+            # Adiciona ao gerenciador
+            success, msg = self.custom_manager.add_custom(process, description)
+
+            if success:
+                self._log(f"✓ Processo customizado adicionado: {process}")
+                QMessageBox.information(self, "Sucesso", msg)
+
+                # Rescan para detectar o processo
+                self._on_scan()
+            else:
+                self._log(f"✗ Falha ao adicionar: {msg}")
+                QMessageBox.warning(self, "Erro", msg)
 
     def _on_restore(self):
         """Abre diálogo de restauração."""

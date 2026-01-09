@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.database import BloatwareItem, RiskLevel
 from core.restore import RestorePoint
+from core.custom_bloat import SystemProcessValidator
 
 
 class ConfirmDialog(QDialog):
