@@ -390,6 +390,9 @@ class MainWindow(QMainWindow):
 
         self._populate_tree(results)
 
+        # Auto-seleciona itens seguros
+        self._select_safe()
+
         total_ram = sum(d.ram_usage_mb for d in results)
         self._log(f"✅ Scan completo: {len(results)} bloatwares detectados ({total_ram:.1f} MB)")
         self._update_status(f"Scan completo: {len(results)} itens encontrados")
