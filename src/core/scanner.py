@@ -129,10 +129,12 @@ class BloatwareScanner:
                     # Serviço desativado não é considerado "instalado"
                     # pois já foi tratado
                     startup_type = self._get_service_startup_type(item.service_name)
-                    if startup_type and startup_type.lower() not in ['disabled', '4']:
-                        is_installed = True
-                        if status == "not_found":
-                            status = "service_stopped"
+                    if startup_type:
+                        startup_str = str(startup_type).lower()
+                        if startup_str not in ['disabled', '4']:
+                            is_installed = True
+                            if status == "not_found":
+                                status = "service_stopped"
 
             # Só adiciona se está instalado/ativo
             if is_installed:
