@@ -1,176 +1,156 @@
 # WinDebloater
 
-Remove bloatware do Windows 10/11 com segurança e persistência.
+Safely remove Windows 10/11 bloatware with persistence.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-## Screenshots
+## Features
 
-<p align="center">
-  <img src="screenshots/01-welcome.png" alt="Tela de Boas-vindas" width="800">
-  <br><em>Wizard de configuração inicial</em>
-</p>
+- **Automatic scanning** - Detects installed bloatware, running processes, and services
+- **Persistent removal** - Uses 8 cascading techniques to ensure complete removal
+- **Custom processes** - Add processes that keep coming back, with protection against removing critical system processes
+- **Automatic backup** - Creates a backup before any changes are made
+- **Easy restoration** - Restore removed items with a single click
+- **User-friendly interface** - Modern dark theme, easy to use
+- **Risk levels** - Identifies safe, cautionary, and risky items
 
-<p align="center">
-  <img src="screenshots/04-main.png" alt="Tela Principal" width="800">
-  <br><em>Interface principal com lista de bloatwares detectados</em>
-</p>
+## Supported Bloatware
 
-## Funcionalidades
-
-- **Scan automático** - Detecta bloatwares instalados, processos em execução e serviços
-- **Remoção persistente** - Usa 8 técnicas diferentes para garantir remoção completa
-- **Processos customizados** - Adicione processos que continuam voltando, com proteção contra remoção de processos críticos
-- **Backup automático** - Cria backup antes de qualquer alteração
-- **Restauração fácil** - Restaure itens removidos com um clique
-- **Interface amigável** - Dark theme moderno e fácil de usar
-- **Níveis de risco** - Identifica itens seguros, com cautela e arriscados
-
-## Bloatwares Suportados
-
-### Apps Microsoft
+### Microsoft Apps
 - Bing Search, Weather, News
 - Cortana
 - OneDrive
 - Skype, Teams
 - Xbox Apps
-- Groove Music, Filmes e TV
+- Groove Music, Movies & TV
 - Phone Link, People, Maps
-- E mais...
+- And more...
 
-### Serviços
-- Windows Search (Indexação)
-- Telemetria (DiagTrack)
+### Services
+- Windows Search (Indexing)
+- Telemetry (DiagTrack)
 - SysMain (Superfetch)
-- Serviços Xbox
+- Xbox Services
 
-### Processos
+### Processes
 - Edge WebView2
 - SearchHost
 - CrossDevice
 
-### Fabricantes
+### Manufacturer Bloatware
 - HP, Dell, Lenovo, Acer, ASUS bloatware
 
-## Instalação
+## Installation
 
-### Requisitos
+### Requirements
 - Windows 10/11
-- Python 3.10 ou superior
-- Privilégios de administrador
+- Python 3.10 or higher
+- Administrator privileges
 
-### Instalação Rápida
+### Quick Installation
 
-1. Clone o repositório:
+1. Clone the repository:
 ```bash
 git clone https://github.com/gabrielcnb/WinDebloater.git
 cd WinDebloater
 ```
 
-2. Execute o instalador:
+2. Run the installer:
 ```bash
 setup.bat
 ```
 
-3. Ou instale manualmente:
+3. Or install manually:
 ```bash
 pip install -r requirements.txt
 python src/main.py
 ```
 
-## Uso
+## Usage
 
-1. Execute `run.bat` ou `python src/main.py`
-2. O programa pedirá privilégios de administrador
-3. Clique em **Scan** para detectar bloatwares
-4. Selecione os itens que deseja remover
-5. Clique em **Remover**
-6. Pronto!
+1. Run `run.bat` or `python src/main.py`
+2. The program will request administrator privileges
+3. Click **Scan** to detect bloatware
+4. Select the items you wish to remove
+5. Click **Remove**
+6. Done.
 
-### Níveis de Risco
+### Risk Levels
 
-| Ícone | Nível | Descrição |
-|-------|-------|-----------|
-| 🟢 | Seguro | Pode remover sem problemas |
-| 🟡 | Cautela | Pode afetar algumas funcionalidades |
-| 🔴 | Arriscado | Pode causar instabilidade |
+| Level | Description |
+|-------|-------------|
+| Safe | Can be removed without issues |
+| Caution | May affect some functionality |
+| Risky | May cause system instability |
 
-### Adicionando Processos Customizados
+### Adding Custom Processes
 
-Se algum processo continua voltando após a remoção:
+If a process keeps returning after removal:
 
-1. Clique em **🎯 Adicionar Processo**
-2. Digite o nome do processo (sem .exe)
-3. O sistema valida automaticamente:
-   - ✅ **Verde** - Processo pode ser removido
-   - ⚠️ **Laranja** - Atenção necessária (aplicativo comum)
-   - ❌ **Vermelho** - Bloqueado (processo crítico do Windows)
-4. Adicione uma descrição opcional
-5. Confirme a adição
+1. Click **Add Process**
+2. Enter the process name (without .exe)
+3. The system validates automatically:
+   - **Green** - Process can be safely removed
+   - **Orange** - Attention required (common application)
+   - **Red** - Blocked (critical Windows process)
+4. Add an optional description
+5. Confirm the addition
 
-**Proteção de Segurança**: O sistema bloqueia automaticamente processos críticos do Windows (explorer, svchost, csrss, etc.) para evitar danos ao sistema.
+**Safety Protection**: The system automatically blocks critical Windows processes (explorer, svchost, csrss, etc.) to prevent system damage.
 
-## Técnicas de Remoção
+## Removal Techniques
 
-O WinDebloater usa 8 técnicas em cascata para garantir remoção:
+WinDebloater uses 8 cascading techniques to ensure removal:
 
-1. `Remove-AppxPackage` (usuário atual)
-2. `Remove-AppxPackage -AllUsers` (todos usuários)
-3. `Remove-AppxProvisionedPackage` (impede reinstalação)
-4. Desativar serviço
-5. Encerrar processo + remover do startup
-6. Desativar tarefas agendadas
+1. `Remove-AppxPackage` (current user)
+2. `Remove-AppxPackage -AllUsers` (all users)
+3. `Remove-AppxProvisionedPackage` (prevents reinstallation)
+4. Disable service
+5. Terminate process and remove from startup
+6. Disable scheduled tasks
 7. IFEO (Image File Execution Options)
-8. Renomear executável (último recurso)
+8. Rename executable (last resort)
 
-## Restauração
+## Restoration
 
-Se algo der errado:
+If something goes wrong:
 
-1. Clique em **Restaurar**
-2. Selecione um ponto de backup
-3. Confirme a restauração
+1. Click **Restore**
+2. Select a backup point
+3. Confirm the restoration
 
-## Estrutura do Projeto
+## Project Structure
 
 ```
 WinDebloater/
 ├── src/
-│   ├── main.py           # Ponto de entrada
-│   ├── ui/               # Interface gráfica
-│   ├── core/             # Lógica principal
-│   └── utils/            # Utilitários
-├── assets/               # Ícones e recursos
-├── backups/              # Backups automáticos
+│   ├── main.py           # Entry point
+│   ├── ui/               # Graphical interface
+│   ├── core/             # Core logic
+│   └── utils/            # Utilities
+├── assets/               # Icons and resources
+├── backups/              # Automatic backups
 ├── requirements.txt
 ├── setup.bat
 └── run.bat
 ```
 
-## Contribuindo
+## Contributing
 
-Contribuições são bem-vindas! Por favor:
+Contributions are welcome. Please follow these steps:
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/NovaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona NovaFeature'`)
-4. Push para a branch (`git push origin feature/NovaFeature`)
-5. Abra um Pull Request
+1. Fork the project
+2. Create a branch for your feature (`git checkout -b feature/NewFeature`)
+3. Commit your changes (`git commit -m 'Add NewFeature'`)
+4. Push to the branch (`git push origin feature/NewFeature`)
+5. Open a Pull Request
 
-## Aviso Legal
+## Disclaimer
 
-Use por sua conta e risco. O autor não se responsabiliza por danos causados pelo uso deste software. Sempre faça backup do sistema antes de usar.
+Use at your own risk. The author is not responsible for any damage caused by the use of this software. Always back up your system before use.
 
-## Licença
+## License
 
-Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
-## Autor
-
-Desenvolvido por Gabriel
-
----
-
-Se este projeto foi útil, considere dar uma ⭐ no repositório!
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
