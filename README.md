@@ -13,7 +13,7 @@ Safely remove Windows 10/11 bloatware with persistence.
 - **Custom processes** - Add processes that keep coming back, with protection against removing critical system processes
 - **Automatic backup** - Creates a backup before any changes are made
 - **Easy restoration** - Restore removed items with a single click
-- **User-friendly interface** - Modern dark theme, easy to use
+- **Dark theme UI** - simple to use
 - **Risk levels** - Identifies safe, cautionary, and risky items
 
 ## Supported Bloatware
