@@ -40,7 +40,7 @@ class ScanThread(QThread):
 
 
 class RemoveThread(QThread):
-    """Thread para executar remoção em background."""
+    """Thread that runs the removal in the background."""
     progress = pyqtSignal(int, int, str)
     log = pyqtSignal(str)
     finished = pyqtSignal(list)
@@ -100,18 +100,18 @@ class MainWindow(QMainWindow):
         # Splitter principal (lista + log)
         splitter = QSplitter(Qt.Orientation.Vertical)
 
-        # Lista de bloatwares
+        # Bloatware list
         list_container = self._create_list_section()
         splitter.addWidget(list_container)
 
-        # Log (colapsável)
+        # Log (collapsible)
         log_container = self._create_log_section()
         splitter.addWidget(log_container)
 
         splitter.setSizes([500, 200])
         main_layout.addWidget(splitter)
 
-        # Footer com progresso
+        # Footer with progress
         footer = self._create_footer()
         main_layout.addWidget(footer)
 
@@ -120,14 +120,14 @@ class MainWindow(QMainWindow):
         layout = QHBoxLayout(header)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        # Título e subtítulo
+        # Title and subtitle
         title_layout = QVBoxLayout()
 
         title = QLabel("WinDebloater")
         title.setObjectName("titleLabel")
         title_layout.addWidget(title)
 
-        subtitle = QLabel("Remova bloatwares do Windows com segurança")
+        subtitle = QLabel("Safely remove Windows bloatware")
         subtitle.setObjectName("subtitleLabel")
         title_layout.addWidget(subtitle)
 
@@ -148,7 +148,7 @@ class MainWindow(QMainWindow):
 
         layout.addLayout(ram_layout)
 
-        # Botões
+        # Buttons
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(12)
 
@@ -183,7 +183,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        # Filtros rápidos
+        # Quick filters
         filter_layout = QHBoxLayout()
 
         select_safe_btn = QPushButton("Selecionar Seguros (🟢)")
@@ -207,10 +207,10 @@ class MainWindow(QMainWindow):
 
         # Tree Widget
         self.tree = QTreeWidget()
-        self.tree.setHeaderLabels(["", "Nome", "Descrição", "RAM", "Risco"])
+        self.tree.setHeaderLabels(["", "Name", "Description", "RAM", "Risk"])
         self.tree.setColumnWidth(0, 40)   # Checkbox
         self.tree.setColumnWidth(1, 200)  # Nome
-        self.tree.setColumnWidth(2, 350)  # Descrição
+        self.tree.setColumnWidth(2, 350)  # Description
         self.tree.setColumnWidth(3, 80)   # RAM
         self.tree.setColumnWidth(4, 80)   # Risco
         self.tree.itemChanged.connect(self._on_item_changed)
@@ -277,7 +277,7 @@ class MainWindow(QMainWindow):
             return "🔴"
 
     def _populate_tree(self, detected: list[DetectedBloatware]):
-        """Popula a árvore com itens detectados."""
+        """Fill the tree with the detected items."""
         self.tree.clear()
         self.detected_items = detected
 
@@ -289,7 +289,7 @@ class MainWindow(QMainWindow):
                 categories[cat] = []
             categories[cat].append(d)
 
-        # Cria itens na árvore
+        # Build the tree items
         for category, items in categories.items():
             # Item pai (categoria)
             cat_item = QTreeWidgetItem(self.tree)
@@ -319,7 +319,7 @@ class MainWindow(QMainWindow):
         self.remove_btn.setEnabled(len(self.selected_items) > 0)
 
     def _on_item_changed(self, item: QTreeWidgetItem, column: int):
-        """Chamado quando um item é marcado/desmarcado."""
+        """Called when an item is ticked or unticked."""
         if column != 0:
             return
 
@@ -417,11 +417,11 @@ class MainWindow(QMainWindow):
         QMessageBox.critical(self, "Erro", f"Erro durante o scan:\n{error}")
 
     def _on_remove(self):
-        """Inicia remoção dos itens selecionados."""
+        """Start removing the selected items."""
         if not self.selected_items:
             return
 
-        # Diálogo de confirmação
+        # Confirmation dialog
         items_to_remove = [d.item for d in self.selected_items]
         dialog = ConfirmDialog(items_to_remove, self)
 
@@ -429,9 +429,9 @@ class MainWindow(QMainWindow):
             self._start_removal()
 
     def _start_removal(self):
-        """Inicia thread de remoção."""
+        """Start the removal thread."""
         self._log("\n" + "="*50)
-        self._log("Iniciando remoção...")
+        self._log("Starting removal...")
         self._update_status("Removendo bloatwares...")
 
         self.scan_btn.setEnabled(False)
@@ -448,26 +448,26 @@ class MainWindow(QMainWindow):
         self.remove_thread.start()
 
     def _on_remove_progress(self, current: int, total: int, message: str):
-        """Atualiza progresso da remoção."""
+        """Update the removal progress."""
         self.progress_bar.setValue(current)
         self._update_status(message)
 
     def _on_remove_finished(self, results: list):
-        """Chamado quando remoção termina."""
+        """Called when the removal finishes."""
         self.progress_bar.setVisible(False)
         self.scan_btn.setEnabled(True)
 
         successful = sum(1 for r in results if r.success)
         failed = len(results) - successful
 
-        self._log(f"\n✅ Remoção completa: {successful} removidos, {failed} falharam")
+        self._log(f"\n✅ Removal complete: {successful} removed, {failed} failed")
         self._update_status(f"Removidos: {successful} | Falharam: {failed}")
 
-        # Mostra resumo
+        # Show the summary
         if failed > 0:
             QMessageBox.warning(
                 self,
-                "Remoção Completa",
+                "Removal Complete",
                 f"Removidos: {successful}\nFalharam: {failed}\n\n"
                 "Verifique o log para detalhes."
             )
@@ -483,40 +483,40 @@ class MainWindow(QMainWindow):
         self._on_scan()
 
     def _on_remove_error(self, error: str):
-        """Chamado quando remoção falha."""
+        """Called when the removal fails."""
         self.progress_bar.setVisible(False)
         self.scan_btn.setEnabled(True)
         self.remove_btn.setEnabled(True)
 
-        self._log(f"❌ Erro na remoção: {error}")
-        self._update_status("Erro na remoção")
+        self._log(f"❌ Removal error: {error}")
+        self._update_status("Removal error")
 
-        QMessageBox.critical(self, "Erro", f"Erro durante a remoção:\n{error}")
+        QMessageBox.critical(self, "Error", f"Error during removal:\n{error}")
 
     def _on_add_custom(self):
-        """Abre diálogo para adicionar processo customizado."""
+        """Open the dialog for adding a custom process."""
         dialog = AddCustomProcessDialog(self)
 
         if dialog.exec():
-            # Usuário confirmou
+            # The user confirmed
             process = dialog.process_name
             description = dialog.description
 
-            # Adiciona ao gerenciador
+            # Add it to the manager
             success, msg = self.custom_manager.add_custom(process, description)
 
             if success:
                 self._log(f"✓ Processo customizado adicionado: {process}")
                 QMessageBox.information(self, "Sucesso", msg)
 
-                # Rescan para detectar o processo
+                # Rescan so the process is detected
                 self._on_scan()
             else:
                 self._log(f"✗ Falha ao adicionar: {msg}")
                 QMessageBox.warning(self, "Erro", msg)
 
     def _on_restore(self):
-        """Abre diálogo de restauração."""
+        """Open the restore dialog."""
         points = self.backup_manager.list_restore_points()
 
         dialog = RestoreDialog(points, self)

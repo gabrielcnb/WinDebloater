@@ -1,5 +1,5 @@
 """
-Gerenciamento de bloatwares customizados pelo usuário.
+Management of user-defined bloatware entries.
 """
 from dataclasses import dataclass
 from typing import List, Optional
@@ -8,7 +8,7 @@ from .database import BloatwareItem, RiskLevel, Category
 
 @dataclass
 class CustomBloatware:
-    """Bloatware customizado adicionado pelo usuário."""
+    """A bloatware entry added by the user."""
     process_name: str
     description: str
 
@@ -36,38 +36,38 @@ class CustomBloatware:
 
 
 class SystemProcessValidator:
-    """Valida se um processo pode ser removido com segurança."""
+    """Validate that a process is safe to remove."""
 
-    # Processos críticos do Windows que NUNCA devem ser removidos
+    # Critical Windows processes that must NEVER be removed
     CRITICAL_PROCESSES = {
         # Kernel e sistema
         'system', 'smss', 'csrss', 'wininit', 'services', 'lsass', 'winlogon',
         'svchost', 'dllhost', 'conhost', 'dwm', 'explorer',
 
-        # Segurança
+        # Security
         'msmpeng', 'nissrv', 'securityhealthservice', 'sgrmbroker',
 
         # Drivers e hardware
         'registry', 'fontdrvhost', 'audiodg',
 
-        # Rede e comunicação
+        # Networking and communication
         'spoolsv', 'taskhostw', 'runtimebroker',
 
         # Sistema de arquivos
         'ntoskrnl', 'idle',
 
-        # Atualizações críticas
+        # Critical updates
         'tiworker', 'trustedinstaller',
 
         # Shell e UI
         'sihost', 'shellexperiencehost', 'startmenuexperiencehost',
         'textinputhost', 'applicationframehost',
 
-        # Python (não remover durante execução)
+        # Python (do not remove while it is running)
         'python', 'pythonw',
     }
 
-    # Processos suspeitos mas que requerem atenção
+    # Suspicious processes that still need care
     WARNING_PROCESSES = {
         'chrome', 'firefox', 'edge', 'msedge',
         'discord', 'spotify', 'steam',
@@ -87,15 +87,15 @@ class SystemProcessValidator:
         """
         process_lower = process_name.lower().replace('.exe', '')
 
-        # Verifica processos críticos
+        # Check the critical processes
         if process_lower in SystemProcessValidator.CRITICAL_PROCESSES:
-            return False, f"❌ BLOQUEADO: '{process_name}' é um processo crítico do Windows e não pode ser removido!"
+            return False, f"❌ BLOCKED: '{process_name}' is a critical Windows process and cannot be removed."
 
-        # Verifica processos que requerem atenção
+        # Check the processes that need care
         if process_lower in SystemProcessValidator.WARNING_PROCESSES:
-            return True, f"⚠️ ATENÇÃO: '{process_name}' é um aplicativo comum. Tem certeza que deseja remover?"
+            return True, f"⚠️ CAREFUL: '{process_name}' is a common application. Are you sure you want to remove it?"
 
-        # Processos desconhecidos também requerem confirmação
+        # Unknown processes need confirmation too
         return True, f"✓ Processo pode ser removido (mas use com cautela)"
 
     @staticmethod
@@ -104,20 +104,20 @@ class SystemProcessValidator:
         Valida o nome do processo.
 
         Returns:
-            Tupla (válido, mensagem_erro)
+            Tuple (is_valid, error_message)
         """
         if not process_name:
-            return False, "Nome do processo não pode estar vazio"
+            return False, "The process name cannot be empty"
 
-        # Remove .exe se usuário digitou
+        # Strip .exe when the user typed it
         process_name = process_name.replace('.exe', '')
 
-        # Verifica caracteres válidos
+        # Check for valid characters
         import re
         if not re.match(r'^[a-zA-Z0-9_\-\.]+$', process_name):
-            return False, "Nome do processo contém caracteres inválidos"
+            return False, "The process name contains invalid characters"
 
-        # Verifica se não é muito curto
+        # Check that it is not too short
         if len(process_name) < 2:
             return False, "Nome do processo muito curto"
 
@@ -137,7 +137,7 @@ class CustomBloatwareManager:
         Returns:
             Tupla (sucesso, mensagem)
         """
-        # Remove .exe se existir
+        # Strip .exe when present
         process_name = process_name.replace('.exe', '')
 
         # Valida nome
@@ -145,14 +145,14 @@ class CustomBloatwareManager:
         if not valid:
             return False, error
 
-        # Verifica se é seguro
+        # Check that it is safe
         safe, msg = SystemProcessValidator.is_safe_to_remove(process_name)
         if not safe:
             return False, msg
 
-        # Verifica se já existe
+        # Check whether it already exists
         if any(item.process_name.lower() == process_name.lower() for item in self.custom_items):
-            return False, f"Processo '{process_name}' já foi adicionado"
+            return False, f"Process '{process_name}' has already been added"
 
         # Adiciona
         custom = CustomBloatware(

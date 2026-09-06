@@ -1,5 +1,5 @@
 """
-Diálogos de confirmação e wizards.
+Confirmation dialogs and wizards.
 """
 import sys
 import os
@@ -20,7 +20,7 @@ from core.custom_bloat import SystemProcessValidator
 
 
 class ConfirmDialog(QDialog):
-    """Diálogo de confirmação para remoção de bloatwares."""
+    """Confirmation dialog for bloatware removal."""
 
     def __init__(self, items: List[BloatwareItem], parent=None):
         super().__init__(parent)
@@ -29,25 +29,25 @@ class ConfirmDialog(QDialog):
         self._setup_ui()
 
     def _setup_ui(self):
-        self.setWindowTitle("Confirmar Remoção")
+        self.setWindowTitle("Confirm Removal")
         self.setMinimumSize(500, 400)
 
         layout = QVBoxLayout(self)
         layout.setSpacing(16)
 
-        # Título
+        # Title
         title = QLabel(f"Remover {len(self.items)} itens?")
         title.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
         layout.addWidget(title)
 
-        # Aviso para itens arriscados
+        # Warning for risky items
         risky_count = sum(1 for i in self.items if i.risk_level == RiskLevel.RISKY)
         if risky_count > 0:
             warning = QLabel(f"⚠️ {risky_count} item(s) marcado(s) como ARRISCADO")
             warning.setStyleSheet("color: #e74c3c; font-weight: bold;")
             layout.addWidget(warning)
 
-        # Lista de itens
+        # Item list
         self.list_widget = QListWidget()
         for item in self.items:
             risk_icon = self._get_risk_icon(item.risk_level)
@@ -56,7 +56,7 @@ class ConfirmDialog(QDialog):
             self.list_widget.addItem(list_item)
         layout.addWidget(self.list_widget)
 
-        # Checkbox de confirmação para itens arriscados
+        # Confirmation checkbox for risky items
         if risky_count > 0:
             self.confirm_check = QCheckBox("Entendo os riscos e desejo continuar")
             self.confirm_check.stateChanged.connect(self._on_confirm_changed)
@@ -64,7 +64,7 @@ class ConfirmDialog(QDialog):
         else:
             self.confirm_check = None
 
-        # Botões
+        # Buttons
         btn_layout = QHBoxLayout()
 
         self.cancel_btn = QPushButton("Cancelar")
@@ -73,7 +73,7 @@ class ConfirmDialog(QDialog):
 
         btn_layout.addStretch()
 
-        self.confirm_btn = QPushButton("Confirmar Remoção")
+        self.confirm_btn = QPushButton("Confirm Removal")
         self.confirm_btn.setObjectName("removeButton")
         self.confirm_btn.clicked.connect(self._on_confirm)
         if risky_count > 0:
@@ -100,7 +100,7 @@ class ConfirmDialog(QDialog):
 
 
 class SetupWizard(QDialog):
-    """Wizard de configuração inicial."""
+    """First-run setup wizard."""
 
     setup_complete = pyqtSignal()
 
@@ -112,30 +112,30 @@ class SetupWizard(QDialog):
         self._setup_ui()
 
     def _setup_ui(self):
-        self.setWindowTitle("WinDebloater - Configuração Inicial")
+        self.setWindowTitle("WinDebloater - Initial Setup")
         self.setMinimumSize(600, 450)
 
         layout = QVBoxLayout(self)
 
-        # Stack de páginas
+        # Page stack
         self.stack = QStackedWidget()
         layout.addWidget(self.stack)
 
-        # Página 1: Boas-vindas
+        # Page 1: welcome
         self._create_welcome_page()
 
-        # Página 2: Dependências (se necessário)
+        # Page 2: dependencies, when needed
         if self.missing_deps:
             self._create_deps_page()
 
-        # Página 3: Compatibilidade (se houver issues)
+        # Page 3: compatibility, when there are issues
         if self.issues:
             self._create_compat_page()
 
-        # Página 4: Conclusão
+        # Page 4: done
         self._create_finish_page()
 
-        # Botões de navegação
+        # Navigation buttons
         btn_layout = QHBoxLayout()
 
         self.back_btn = QPushButton("← Voltar")
@@ -145,7 +145,7 @@ class SetupWizard(QDialog):
 
         btn_layout.addStretch()
 
-        self.next_btn = QPushButton("Próximo →")
+        self.next_btn = QPushButton("Next →")
         self.next_btn.clicked.connect(self._next_page)
         btn_layout.addWidget(self.next_btn)
 
@@ -170,10 +170,10 @@ class SetupWizard(QDialog):
         layout.addSpacing(20)
 
         features = QLabel("""
-        ✅ Detecta automaticamente bloatwares instalados
-        ✅ Remove com persistência usando múltiplas técnicas
-        ✅ Cria backup antes de qualquer alteração
-        ✅ Permite restaurar itens removidos
+        ✅ Detects installed bloatware automatically
+        ✅ Removes persistently, using several techniques
+        ✅ Takes a backup before any change
+        ✅ Lets you restore removed items
         """)
         features.setFont(QFont("Segoe UI", 12))
         layout.addWidget(features)
@@ -184,7 +184,7 @@ class SetupWizard(QDialog):
         page = QWidget()
         layout = QVBoxLayout(page)
 
-        title = QLabel("📦 Dependências Necessárias")
+        title = QLabel("📦 Required Dependencies")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         layout.addWidget(title)
 
@@ -215,7 +215,7 @@ class SetupWizard(QDialog):
         page = QWidget()
         layout = QVBoxLayout(page)
 
-        title = QLabel("⚠️ Verificação de Compatibilidade")
+        title = QLabel("⚠️ Compatibility Check")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         layout.addWidget(title)
 
@@ -240,7 +240,7 @@ class SetupWizard(QDialog):
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
 
-        subtitle = QLabel("O WinDebloater está configurado e pronto para uso.")
+        subtitle = QLabel("WinDebloater is configured and ready to use.")
         subtitle.setFont(QFont("Segoe UI", 14))
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(subtitle)
@@ -251,9 +251,9 @@ class SetupWizard(QDialog):
         self.install_btn.setEnabled(False)
         self.install_progress.setVisible(True)
         self.install_progress.setRange(0, 0)  # Indeterminate
-        self.install_status.setText("Instalando dependências...")
+        self.install_status.setText("Installing dependencies...")
 
-        # TODO: Implementar instalação real em thread separada
+        # TODO: run the real installation on a separate thread
         # Por enquanto, simula sucesso
         from PyQt6.QtCore import QTimer
         QTimer.singleShot(2000, self._install_complete)
@@ -261,7 +261,7 @@ class SetupWizard(QDialog):
     def _install_complete(self):
         self.install_progress.setRange(0, 100)
         self.install_progress.setValue(100)
-        self.install_status.setText("✅ Dependências instaladas com sucesso!")
+        self.install_status.setText("✅ Dependencies installed.")
         self.next_btn.setEnabled(True)
 
     def _next_page(self):
@@ -271,7 +271,7 @@ class SetupWizard(QDialog):
             self.back_btn.setVisible(True)
 
             if self.current_page == self.stack.count() - 1:
-                self.next_btn.setText("Começar! 🚀")
+                self.next_btn.setText("Start 🚀")
         else:
             self.setup_complete.emit()
             self.accept()
@@ -284,11 +284,11 @@ class SetupWizard(QDialog):
             if self.current_page == 0:
                 self.back_btn.setVisible(False)
 
-            self.next_btn.setText("Próximo →")
+            self.next_btn.setText("Next →")
 
 
 class RestoreDialog(QDialog):
-    """Diálogo para restauração de backups."""
+    """Dialog for restoring backups."""
 
     def __init__(self, restore_points: List[RestorePoint], parent=None):
         super().__init__(parent)
@@ -302,17 +302,17 @@ class RestoreDialog(QDialog):
 
         layout = QVBoxLayout(self)
 
-        # Título
-        title = QLabel("↩️ Selecione um ponto de restauração")
+        # Title
+        title = QLabel("↩️ Pick a restore point")
         title.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
         layout.addWidget(title)
 
         if not self.restore_points:
-            no_backups = QLabel("Nenhum backup disponível.")
+            no_backups = QLabel("No backups available.")
             no_backups.setStyleSheet("color: #8888aa;")
             layout.addWidget(no_backups)
         else:
-            # Lista de pontos de restauração
+            # List of restore points
             self.list_widget = QListWidget()
             self.list_widget.itemClicked.connect(self._on_item_clicked)
 
@@ -333,7 +333,7 @@ class RestoreDialog(QDialog):
             self.details_label.setStyleSheet("color: #8888aa;")
             layout.addWidget(self.details_label)
 
-        # Botões
+        # Buttons
         btn_layout = QHBoxLayout()
 
         cancel_btn = QPushButton("Cancelar")
@@ -354,12 +354,12 @@ class RestoreDialog(QDialog):
         point = item.data(Qt.ItemDataRole.UserRole)
         self.selected_point = point
 
-        # Mostra detalhes
+        # Show the details
         entry_names = [e.item_name for e in point.entries[:5]]
         if len(point.entries) > 5:
             entry_names.append(f"... e mais {len(point.entries) - 5}")
 
-        details = "Itens incluídos:\n" + "\n".join(f"  • {name}" for name in entry_names)
+        details = "Items included:\n" + "\n".join(f"  • {name}" for name in entry_names)
         self.details_label.setText(details)
         self.details_label.setStyleSheet("color: #eaeaea;")
 
@@ -367,12 +367,12 @@ class RestoreDialog(QDialog):
 
     def _on_restore(self):
         if self.selected_point:
-            # Confirmação extra
+            # Extra confirmation
             reply = QMessageBox.question(
                 self,
-                "Confirmar Restauração",
+                "Confirm Restore",
                 f"Deseja restaurar o backup '{self.selected_point.name}'?\n\n"
-                "Isso irá reverter as alterações feitas após este ponto.",
+                "This will revert the changes made after this point.",
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
             )
 

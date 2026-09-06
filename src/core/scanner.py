@@ -6,7 +6,7 @@ from typing import List, Optional, Dict, Any
 import sys
 import os
 
-# Ajusta path para imports
+# Adjust the path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.database import BloatwareDatabase, BloatwareItem, Category
@@ -17,7 +17,7 @@ from utils.powershell import PowerShell
 class DetectedBloatware:
     """Representa um bloatware detectado no sistema."""
     item: BloatwareItem           # Item do database
-    is_installed: bool            # Se está instalado
+    is_installed: bool            # Whether it is installed
     ram_usage_mb: float           # Uso de RAM em MB (se processo ativo)
     process_id: Optional[int]     # PID se estiver rodando
     status: str                   # "installed", "running", "service_active"
@@ -34,14 +34,14 @@ class BloatwareScanner:
         self._startup_items: List[Dict] = []
 
     def refresh_system_data(self) -> None:
-        """Atualiza dados do sistema (pacotes, processos, serviços)."""
+        """Refresh system data (packages, processes, services)."""
         self._installed_packages = PowerShell.get_appx_packages()
         self._running_processes = PowerShell.get_processes()
         self._services = PowerShell.get_services()
         self._startup_items = PowerShell.get_startup_items()
 
     def _is_package_installed(self, package_name: str) -> bool:
-        """Verifica se um pacote AppX está instalado."""
+        """Check whether an AppX package is installed."""
         if not package_name:
             return False
 
@@ -51,7 +51,7 @@ class BloatwareScanner:
         return False
 
     def _get_process_info(self, process_name: str) -> Optional[Dict]:
-        """Retorna informações de um processo em execução."""
+        """Return information about a running process."""
         if not process_name:
             return None
 
@@ -61,7 +61,7 @@ class BloatwareScanner:
         return None
 
     def _is_service_active(self, service_name: str) -> bool:
-        """Verifica se um serviço está ativo."""
+        """Check whether a service is active."""
         if not service_name:
             return False
 
@@ -75,7 +75,7 @@ class BloatwareScanner:
         return False
 
     def _get_service_startup_type(self, service_name: str) -> Optional[str]:
-        """Retorna tipo de inicialização do serviço."""
+        """Return a service's startup type."""
         if not service_name:
             return None
 
@@ -105,13 +105,13 @@ class BloatwareScanner:
             process_id = None
             status = "not_found"
 
-            # Verifica pacote AppX
+            # Check the AppX package
             if item.package_name:
                 if self._is_package_installed(item.package_name):
                     is_installed = True
                     status = "installed"
 
-            # Verifica processo em execução
+            # Check for a running process
             if item.process_name:
                 proc_info = self._get_process_info(item.process_name)
                 if proc_info:
@@ -120,14 +120,14 @@ class BloatwareScanner:
                     process_id = proc_info.get('Id')
                     status = "running"
 
-            # Verifica serviço
+            # Check the service
             if item.service_name:
                 if self._is_service_active(item.service_name):
                     is_installed = True
                     status = "service_active"
                 else:
-                    # Serviço desativado não é considerado "instalado"
-                    # pois já foi tratado
+                    # A disabled service does not count as "installed",
+                    # since it has already been handled
                     startup_type = self._get_service_startup_type(item.service_name)
                     if startup_type:
                         startup_str = str(startup_type).lower()
@@ -136,7 +136,7 @@ class BloatwareScanner:
                             if status == "not_found":
                                 status = "service_stopped"
 
-            # Só adiciona se está instalado/ativo
+            # Only add it when installed/active
             if is_installed:
                 detected.append(DetectedBloatware(
                     item=item,
@@ -149,7 +149,7 @@ class BloatwareScanner:
         return detected
 
     def scan_by_category(self, category: Category) -> List[DetectedBloatware]:
-        """Escaneia apenas uma categoria específica."""
+        """Scan a single category."""
         all_detected = self.scan(refresh=True)
         return [d for d in all_detected if d.item.category == category]
 
@@ -194,7 +194,7 @@ class BloatwareScanner:
         return summary
 
     def quick_scan(self) -> List[DetectedBloatware]:
-        """Scan rápido - apenas processos em execução."""
+        """Quick scan: running processes only."""
         self._running_processes = PowerShell.get_processes()
 
         detected = []

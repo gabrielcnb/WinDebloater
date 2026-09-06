@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
 
-:: Verifica se está rodando como admin
+:: Check whether we are running as admin
 net session >nul 2>&1
 if %errorlevel% neq 0 (
-    echo Solicitando privilégios de administrador...
+    echo Requesting administrator privileges...
     powershell -Command "Start-Process '%~f0' -Verb RunAs"
     exit /b
 )
@@ -12,7 +12,7 @@ if %errorlevel% neq 0 (
 title WinDebloater - Setup
 color 0A
 
-:: Vai para o diretório do script
+:: Move to the script directory
 cd /d "%~dp0"
 
 echo.
@@ -21,15 +21,15 @@ echo     WinDebloater - Instalador
 echo  ================================================
 echo.
 
-:: Verifica se Python está instalado
+:: Check that Python is installed
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [ERRO] Python não encontrado!
+    echo [ERROR] Python not found!
     echo.
     echo Por favor, instale Python 3.10 ou superior:
     echo https://www.python.org/downloads/
     echo.
-    echo Marque a opção "Add Python to PATH" durante a instalação.
+    echo Tick "Add Python to PATH" during installation.
     echo.
     pause
     exit /b 1
@@ -38,32 +38,32 @@ if %errorlevel% neq 0 (
 echo [OK] Python encontrado
 python --version
 
-:: Verifica pip
+:: Check pip
 pip --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [ERRO] pip não encontrado!
+    echo [ERROR] pip not found!
     pause
     exit /b 1
 )
 
 echo [OK] pip encontrado
 
-:: Instala dependências
+:: Install dependencies
 echo.
-echo Instalando dependências...
+echo Installing dependencies...
 echo.
 
 pip install -r "%~dp0requirements.txt"
 
 if %errorlevel% neq 0 (
     echo.
-    echo [ERRO] Falha ao instalar dependências!
+    echo [ERROR] Failed to install dependencies!
     pause
     exit /b 1
 )
 
 echo.
-echo [OK] Dependências instaladas com sucesso!
+echo [OK] Dependencies installed.
 echo.
 
 :: Pergunta se quer executar

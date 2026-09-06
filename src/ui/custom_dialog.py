@@ -1,5 +1,5 @@
 """
-Diálogo para adicionar processos customizados.
+Dialog for adding custom processes.
 """
 import sys
 import os
@@ -16,7 +16,7 @@ from core.custom_bloat import SystemProcessValidator
 
 
 class AddCustomProcessDialog(QDialog):
-    """Diálogo para adicionar processo customizado."""
+    """Dialog for adding a custom process."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -31,24 +31,24 @@ class AddCustomProcessDialog(QDialog):
         layout = QVBoxLayout(self)
         layout.setSpacing(16)
 
-        # Título
+        # Title
         title = QLabel("🎯 Adicionar Processo Persistente")
         title.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
         layout.addWidget(title)
 
-        # Descrição
+        # Description
         desc = QLabel(
-            "Use esta função para adicionar processos que continuam voltando mesmo após remoção.\n"
-            "O WinDebloater aplicará todas as técnicas de remoção persistente."
+            "Use this to add processes that keep coming back even after removal.\n"
+            "WinDebloater will apply every persistent removal technique."
         )
         desc.setWordWrap(True)
         desc.setStyleSheet("color: #8888aa;")
         layout.addWidget(desc)
 
-        # Aviso de segurança
+        # Safety warning
         warning = QLabel(
-            "⚠️ ATENÇÃO: Processos críticos do Windows são bloqueados automaticamente "
-            "para sua segurança."
+            "⚠️ CAREFUL: critical Windows processes are blocked automatically "
+            "for your safety."
         )
         warning.setWordWrap(True)
         warning.setStyleSheet(
@@ -67,13 +67,13 @@ class AddCustomProcessDialog(QDialog):
         self.process_input.textChanged.connect(self._on_process_changed)
         layout.addWidget(self.process_input)
 
-        # Status de validação
+        # Validation status
         self.validation_label = QLabel("")
         self.validation_label.setWordWrap(True)
         layout.addWidget(self.validation_label)
 
-        # Descrição opcional
-        desc_label = QLabel("Descrição (opcional):")
+        # Optional description
+        desc_label = QLabel("Description (optional):")
         desc_label.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
         layout.addWidget(desc_label)
 
@@ -84,20 +84,20 @@ class AddCustomProcessDialog(QDialog):
         self.desc_input.setMaximumHeight(80)
         layout.addWidget(self.desc_input)
 
-        # Info sobre técnicas
+        # Information about the techniques
         info = QLabel(
-            "Técnicas que serão aplicadas:\n"
-            "  • Encerrar processo\n"
-            "  • Remover do startup\n"
+            "Techniques that will be applied:\n"
+            "  • Kill the process\n"
+            "  • Remove it from startup\n"
             "  • IFEO (Image File Execution Options)\n"
-            "  • Bloquear reinício automático"
+            "  • Block automatic restart"
         )
         info.setStyleSheet("color: #6a9fb5; padding: 10px; background: #1a2a3a; border-radius: 5px;")
         layout.addWidget(info)
 
         layout.addStretch()
 
-        # Botões
+        # Buttons
         btn_layout = QHBoxLayout()
 
         cancel_btn = QPushButton("Cancelar")
@@ -121,7 +121,7 @@ class AddCustomProcessDialog(QDialog):
             self.add_btn.setEnabled(False)
             return
 
-        # Remove .exe se usuário digitou
+        # Strip .exe when the user typed it
         text = text.replace('.exe', '')
 
         # Valida nome
@@ -132,17 +132,17 @@ class AddCustomProcessDialog(QDialog):
             self.add_btn.setEnabled(False)
             return
 
-        # Verifica se é seguro
+        # Check that it is safe
         safe, msg = SystemProcessValidator.is_safe_to_remove(text)
         if not safe:
             self.validation_label.setText(msg)
             self.validation_label.setStyleSheet("color: #e74c3c; font-weight: bold;")
             self.add_btn.setEnabled(False)
             return
-
+# All good
         # Tudo OK
         self.validation_label.setText(msg)
-        if "ATENÇÃO" in msg:
+        if "CAREFUL" in msg:
             self.validation_label.setStyleSheet("color: #ffa500; font-weight: bold;")
         else:
             self.validation_label.setStyleSheet("color: #27ae60; font-weight: bold;")
@@ -156,13 +156,13 @@ class AddCustomProcessDialog(QDialog):
         if not process:
             return
 
-        # Confirmação final
+        # Final confirmation
         reply = QMessageBox.question(
             self,
-            "Confirmar Adição",
-            f"Adicionar o processo '{process}' à lista de remoção?\n\n"
-            "O WinDebloater tentará remover este processo usando todas as "
-            "técnicas de persistência disponíveis.",
+            "Confirm Addition",
+            f"Add the process '{process}' to the removal list?\n\n"
+            "WinDebloater will try to remove this process using every "
+            "persistence technique available.",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
 

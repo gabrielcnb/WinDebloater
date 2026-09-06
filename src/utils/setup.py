@@ -1,5 +1,5 @@
 """
-Auto-instalação de dependências e verificação de ambiente.
+Dependency auto-installation and environment checks.
 """
 import subprocess
 import sys
@@ -8,7 +8,7 @@ from typing import List, Tuple
 
 
 def check_python_version() -> Tuple[bool, str]:
-    """Verifica se a versão do Python é compatível."""
+    """Check that the Python version is compatible."""
     version = sys.version_info
     if version.major >= 3 and version.minor >= 8:
         return True, f"Python {version.major}.{version.minor}.{version.micro}"
@@ -16,7 +16,7 @@ def check_python_version() -> Tuple[bool, str]:
 
 
 def check_pip() -> bool:
-    """Verifica se o pip está disponível."""
+    """Check that pip is available."""
     try:
         subprocess.run(
             [sys.executable, "-m", "pip", "--version"],
@@ -47,10 +47,10 @@ def get_installed_packages() -> List[str]:
 
 def check_dependencies() -> List[Tuple[str, bool]]:
     """
-    Verifica se todas as dependências estão instaladas.
+    Check whether every dependency is installed.
 
     Returns:
-        Lista de tuplas (nome_pacote, está_instalado)
+        List of (package_name, is_installed) tuples
     """
     required = ['pyqt6', 'pywin32']
     installed = get_installed_packages()
@@ -87,23 +87,23 @@ def install_package(package_name: str) -> Tuple[bool, str]:
             return False, result.stderr
 
     except subprocess.TimeoutExpired:
-        return False, "Instalação excedeu o tempo limite"
+        return False, "Installation timed out"
     except Exception as e:
         return False, str(e)
 
 
 def install_dependencies(packages: List[str] = None) -> List[Tuple[str, bool, str]]:
     """
-    Instala as dependências necessárias.
+    Install the required dependencies.
 
     Args:
-        packages: Lista de pacotes a instalar. Se None, instala todos os necessários.
+        packages: Packages to install. When None, installs everything needed.
 
     Returns:
         Lista de tuplas (pacote, sucesso, mensagem)
     """
     if packages is None:
-        # Verifica quais precisam ser instalados
+        # Work out which ones need installing
         deps = check_dependencies()
         packages = [name for name, installed in deps if not installed]
 
@@ -116,7 +116,7 @@ def install_dependencies(packages: List[str] = None) -> List[Tuple[str, bool, st
 
 
 def get_missing_dependencies() -> List[str]:
-    """Retorna lista de dependências faltando."""
+    """Return the list of missing dependencies."""
     deps = check_dependencies()
     return [name for name, installed in deps if not installed]
 
@@ -131,23 +131,23 @@ def setup_environment() -> Tuple[bool, List[str]]:
     messages = []
     all_ok = True
 
-    # Verifica Python
+    # Check Python
     py_ok, py_msg = check_python_version()
     messages.append(f"Python: {py_msg}")
     if not py_ok:
         all_ok = False
 
-    # Verifica pip
+    # Check pip
     if not check_pip():
-        messages.append("pip: Não encontrado")
+        messages.append("pip: not found")
         all_ok = False
     else:
         messages.append("pip: OK")
 
-    # Verifica dependências
+    # Check dependencies
     deps = check_dependencies()
     for name, installed in deps:
-        status = "OK" if installed else "Não instalado"
+        status = "OK" if installed else "Not installed"
         messages.append(f"{name}: {status}")
         if not installed:
             all_ok = False

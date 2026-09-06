@@ -7,7 +7,7 @@ from typing import List, Optional
 
 
 class RiskLevel(Enum):
-    """Nível de risco ao remover o item."""
+    """How risky it is to remove the item."""
     SAFE = "safe"           # 🟢 Seguro - pode remover sem problemas
     CAUTION = "caution"     # 🟡 Cuidado - pode afetar algumas funcionalidades
     RISKY = "risky"         # 🔴 Arriscado - pode causar instabilidade
@@ -15,26 +15,26 @@ class RiskLevel(Enum):
 
 class Category(Enum):
     """Categorias de bloatware."""
-    MICROSOFT_APPS = "Apps Microsoft"
-    MANUFACTURER = "Apps do Fabricante"
-    SERVICES = "Serviços"
-    PROCESSES = "Processos"
-    STARTUP = "Inicialização"
+    MICROSOFT_APPS = "Microsoft Apps"
+    MANUFACTURER = "Manufacturer Apps"
+    SERVICES = "Services"
+    PROCESSES = "Processes"
+    STARTUP = "Startup"
 
 
 @dataclass
 class BloatwareItem:
     """Representa um item de bloatware."""
-    id: str                          # Identificador único
-    name: str                        # Nome amigável
-    description: str                 # Descrição do que faz
+    id: str                          # Unique identifier
+    name: str                        # Friendly name
+    description: str                 # What it does
     category: Category               # Categoria
-    risk_level: RiskLevel            # Nível de risco
-    package_name: Optional[str]      # Nome do pacote AppX (se aplicável)
-    process_name: Optional[str]      # Nome do processo (se aplicável)
-    service_name: Optional[str]      # Nome do serviço (se aplicável)
+    risk_level: RiskLevel            # Risk level
+    package_name: Optional[str]      # AppX package name, where applicable
+    process_name: Optional[str]      # Process name, where applicable
+    service_name: Optional[str]      # Service name, where applicable
     registry_keys: List[str]         # Chaves de registro relacionadas
-    removal_commands: List[str]      # Comandos PowerShell para remoção
+    removal_commands: List[str]      # PowerShell commands used for removal
     can_reinstall: bool              # Se pode ser reinstalado facilmente
 
 
@@ -70,7 +70,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="bing_weather",
                 name="Clima (Weather)",
-                description="App de previsão do tempo da Microsoft.",
+                description="Microsoft's weather app.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.BingWeather",
@@ -85,7 +85,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="cortana",
                 name="Cortana",
-                description="Assistente virtual da Microsoft. Não é mais essencial no Windows 11.",
+                description="Microsoft's virtual assistant. No longer essential on Windows 11.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.549981C3F5F10",
@@ -102,7 +102,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="get_help",
                 name="Obter Ajuda",
-                description="App de ajuda da Microsoft. Raramente útil.",
+                description="Microsoft's help app. Rarely useful.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.GetHelp",
@@ -117,7 +117,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="mixed_reality",
                 name="Portal de Realidade Mista",
-                description="Para headsets VR/AR. Inútil se você não tem um.",
+                description="For VR/AR headsets. Useless if you do not have one.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.MixedReality.Portal",
@@ -147,7 +147,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="skype",
                 name="Skype",
-                description="App de videochamadas. Substituído pelo Teams em muitos casos.",
+                description="Video calling app. Replaced by Teams in most cases.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.SkypeApp",
@@ -162,7 +162,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="phone_link",
                 name="Phone Link (Seu Telefone)",
-                description="Conecta seu celular ao PC. Remove se não usa.",
+                description="Links your phone to the PC. Remove it if you do not use it.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.YourPhone",
@@ -177,7 +177,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="zune_music",
                 name="Groove Music",
-                description="Player de música da Microsoft. Alternativas melhores existem.",
+                description="Microsoft's music player. Better alternatives exist.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.ZuneMusic",
@@ -192,7 +192,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="zune_video",
                 name="Filmes e TV",
-                description="Player de vídeo da Microsoft. VLC é melhor.",
+                description="Microsoft's video player. VLC is better.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.ZuneVideo",
@@ -207,7 +207,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="maps",
                 name="Mapas",
-                description="App de mapas offline. Google Maps é mais usado.",
+                description="Offline maps app. Google Maps is more widely used.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.WindowsMaps",
@@ -222,7 +222,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="feedback_hub",
                 name="Hub de Feedback",
-                description="Para enviar feedback à Microsoft. Raramente usado.",
+                description="For sending feedback to Microsoft. Rarely used.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.WindowsFeedbackHub",
@@ -237,7 +237,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="sound_recorder",
                 name="Gravador de Voz",
-                description="Gravador de áudio simples.",
+                description="Simple audio recorder.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.WindowsSoundRecorder",
@@ -251,8 +251,8 @@ class BloatwareDatabase:
             ),
             BloatwareItem(
                 id="quick_assist",
-                name="Assistência Rápida",
-                description="Suporte remoto da Microsoft. Útil apenas para suporte técnico.",
+                name="Quick Assist",
+                description="Microsoft remote support. Only useful for tech support.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="MicrosoftCorporationII.QuickAssist",
@@ -267,7 +267,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="dev_home",
                 name="Dev Home",
-                description="Hub para desenvolvedores. Inútil para usuários comuns.",
+                description="Hub for developers. Useless for ordinary users.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.Windows.DevHome",
@@ -282,7 +282,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="clipchamp",
                 name="Clipchamp",
-                description="Editor de vídeo da Microsoft. Alternativas melhores existem.",
+                description="Microsoft's video editor. Better alternatives exist.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Clipchamp.Clipchamp",
@@ -297,7 +297,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="onedrive",
                 name="OneDrive",
-                description="Armazenamento na nuvem. Remove se usa outra solução.",
+                description="Cloud storage. Remove it if you use something else.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.CAUTION,
                 package_name="Microsoft.OneDriveSync",
@@ -316,7 +316,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="teams",
                 name="Microsoft Teams",
-                description="App de comunicação. Remove se não usa para trabalho.",
+                description="Communication app. Remove it if you do not use it for work.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="MicrosoftTeams",
@@ -331,7 +331,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="xbox_apps",
                 name="Xbox Apps (Game Bar, etc)",
-                description="Apps Xbox. Remove se não joga no PC.",
+                description="Xbox apps. Remove them if you do not game on the PC.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.CAUTION,
                 package_name="Microsoft.XboxGamingOverlay",
@@ -346,7 +346,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="news",
                 name="Microsoft News",
-                description="App de notícias. Consome recursos em segundo plano.",
+                description="News app. Uses resources in the background.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.BingNews",
@@ -376,7 +376,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="solitaire",
                 name="Solitaire Collection",
-                description="Jogos de paciência. Contém anúncios.",
+                description="Solitaire games. Contains adverts.",
                 category=Category.MICROSOFT_APPS,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.MicrosoftSolitaireCollection",
@@ -390,12 +390,12 @@ class BloatwareDatabase:
             ),
         ])
 
-        # ===== SERVIÇOS =====
+        # ===== SERVICES =====
         self.items.extend([
             BloatwareItem(
                 id="wsearch",
-                name="Windows Search (Indexação)",
-                description="Indexa arquivos para busca rápida. Consome RAM e disco.",
+                name="Windows Search (Indexing)",
+                description="Indexes files for fast search. Uses RAM and disk.",
                 category=Category.SERVICES,
                 risk_level=RiskLevel.CAUTION,
                 package_name=None,
@@ -411,7 +411,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="sysmain",
                 name="SysMain (Superfetch)",
-                description="Pré-carrega apps na RAM. Pode ser pesado em SSDs.",
+                description="Preloads apps into RAM. Can be heavy on SSDs.",
                 category=Category.SERVICES,
                 risk_level=RiskLevel.CAUTION,
                 package_name=None,
@@ -427,7 +427,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="diagtrack",
                 name="Telemetria (DiagTrack)",
-                description="Coleta dados para Microsoft. Privacidade questionável.",
+                description="Collects data for Microsoft. Questionable for privacy.",
                 category=Category.SERVICES,
                 risk_level=RiskLevel.SAFE,
                 package_name=None,
@@ -444,8 +444,8 @@ class BloatwareDatabase:
             ),
             BloatwareItem(
                 id="dmwappushservice",
-                name="Push de Diagnóstico",
-                description="Envia dados de diagnóstico à Microsoft.",
+                name="Diagnostic Push",
+                description="Sends diagnostic data to Microsoft.",
                 category=Category.SERVICES,
                 risk_level=RiskLevel.SAFE,
                 package_name=None,
@@ -460,8 +460,8 @@ class BloatwareDatabase:
             ),
             BloatwareItem(
                 id="xbox_services",
-                name="Serviços Xbox",
-                description="Serviços para jogos Xbox. Remove se não joga.",
+                name="Xbox Services",
+                description="Services for Xbox gaming. Remove them if you do not game.",
                 category=Category.SERVICES,
                 risk_level=RiskLevel.SAFE,
                 package_name=None,
@@ -500,7 +500,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="edge_game_assist",
                 name="Edge Game Assist",
-                description="Assistente de jogos do Edge. Inútil se não usa Edge para jogos.",
+                description="Edge gaming assistant. Useless if you do not game through Edge.",
                 category=Category.PROCESSES,
                 risk_level=RiskLevel.SAFE,
                 package_name="Microsoft.Edge.GameAssist",
@@ -535,8 +535,8 @@ class BloatwareDatabase:
             ),
             BloatwareItem(
                 id="cross_device",
-                name="CrossDevice (Sincronização)",
-                description="Sincronização entre dispositivos Windows. Consome recursos.",
+                name="CrossDevice (Sync)",
+                description="Sync between Windows devices. Uses resources.",
                 category=Category.PROCESSES,
                 risk_level=RiskLevel.SAFE,
                 package_name=None,
@@ -559,7 +559,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="hp_bloat",
                 name="HP Bloatware",
-                description="Apps pré-instalados da HP. Geralmente inúteis.",
+                description="HP preinstalled apps. Usually useless.",
                 category=Category.MANUFACTURER,
                 risk_level=RiskLevel.SAFE,
                 package_name="AD2F1837.HPPrinterControl",
@@ -574,7 +574,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="dell_bloat",
                 name="Dell Bloatware",
-                description="Apps pré-instalados da Dell.",
+                description="Dell preinstalled apps.",
                 category=Category.MANUFACTURER,
                 risk_level=RiskLevel.SAFE,
                 package_name=None,
@@ -589,7 +589,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="lenovo_bloat",
                 name="Lenovo Bloatware",
-                description="Apps pré-instalados da Lenovo.",
+                description="Lenovo preinstalled apps.",
                 category=Category.MANUFACTURER,
                 risk_level=RiskLevel.SAFE,
                 package_name=None,
@@ -604,7 +604,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="acer_bloat",
                 name="Acer Bloatware",
-                description="Apps pré-instalados da Acer.",
+                description="Acer preinstalled apps.",
                 category=Category.MANUFACTURER,
                 risk_level=RiskLevel.SAFE,
                 package_name=None,
@@ -619,7 +619,7 @@ class BloatwareDatabase:
             BloatwareItem(
                 id="asus_bloat",
                 name="ASUS Bloatware",
-                description="Apps pré-instalados da ASUS.",
+                description="ASUS preinstalled apps.",
                 category=Category.MANUFACTURER,
                 risk_level=RiskLevel.SAFE,
                 package_name=None,
@@ -638,15 +638,15 @@ class BloatwareDatabase:
         return self.items
 
     def get_by_category(self, category: Category) -> List[BloatwareItem]:
-        """Retorna bloatwares de uma categoria específica."""
+        """Return the bloatware in a given category."""
         return [item for item in self.items if item.category == category]
 
     def get_by_risk(self, risk_level: RiskLevel) -> List[BloatwareItem]:
-        """Retorna bloatwares de um nível de risco específico."""
+        """Return the bloatware at a given risk level."""
         return [item for item in self.items if item.risk_level == risk_level]
 
     def get_safe_items(self) -> List[BloatwareItem]:
-        """Retorna apenas itens seguros para remoção."""
+        """Return only the items that are safe to remove."""
         return self.get_by_risk(RiskLevel.SAFE)
 
     def get_by_id(self, item_id: str) -> Optional[BloatwareItem]:
@@ -657,7 +657,7 @@ class BloatwareDatabase:
         return None
 
     def search(self, query: str) -> List[BloatwareItem]:
-        """Busca bloatwares por nome ou descrição."""
+        """Search bloatware by name or description."""
         query = query.lower()
         return [
             item for item in self.items

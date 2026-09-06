@@ -1,5 +1,5 @@
 """
-Verificação e resolução de incompatibilidades do sistema.
+Detects and resolves system incompatibilities.
 """
 import subprocess
 import platform
@@ -15,14 +15,14 @@ from utils.powershell import PowerShell
 class Compatibility:
     """Classe para verificar e resolver incompatibilidades."""
 
-    # Lista de antivírus conhecidos que podem interferir
+    # Known antivirus products that can interfere
     KNOWN_ANTIVIRUS = [
         "avast", "avg", "norton", "mcafee", "kaspersky",
         "bitdefender", "malwarebytes", "avira", "eset",
         "trend micro", "webroot", "sophos", "f-secure"
     ]
 
-    # Processos que podem bloquear operações
+    # Processes that can block operations
     BLOCKING_PROCESSES = [
         "MsMpEng",  # Windows Defender
         "NisSrv",   # Windows Defender Network
@@ -31,7 +31,7 @@ class Compatibility:
     @staticmethod
     def get_windows_version() -> Tuple[str, int]:
         """
-        Retorna versão do Windows.
+        Return the Windows version.
 
         Returns:
             Tupla (nome_versao, build_number)
@@ -48,27 +48,27 @@ class Compatibility:
 
     @staticmethod
     def is_windows_11() -> bool:
-        """Verifica se é Windows 11."""
+        """Check whether this is Windows 11."""
         _, build = Compatibility.get_windows_version()
         return build >= 22000
 
     @staticmethod
     def is_windows_10() -> bool:
-        """Verifica se é Windows 10."""
+        """Check whether this is Windows 10."""
         _, build = Compatibility.get_windows_version()
         return 10240 <= build < 22000
 
     @staticmethod
     def check_antivirus() -> List[str]:
         """
-        Detecta antivírus instalados que podem interferir.
+        Detect installed antivirus products that could interfere.
 
         Returns:
-            Lista de nomes de antivírus detectados.
+            List of detected antivirus names.
         """
         detected = []
 
-        # Verifica via WMI
+        # Check through WMI
         command = """
         Get-CimInstance -Namespace root/SecurityCenter2 -ClassName AntivirusProduct |
         Select-Object displayName | ConvertTo-Json
@@ -94,7 +94,7 @@ class Compatibility:
         Verifica status do Windows Defender.
 
         Returns:
-            Tupla (defender_ativo, proteção_tempo_real)
+            Tuple (defender_enabled, real_time_protection)
         """
         command = """
         $status = Get-MpComputerStatus
@@ -108,11 +108,11 @@ class Compatibility:
         if success and data:
             return data.get('Enabled', True), data.get('RealTimeProtection', True)
 
-        return True, True  # Assume ativo se não conseguir verificar
+        return True, True  # Assume enabled when the check fails
 
     @staticmethod
     def check_tamper_protection() -> bool:
-        """Verifica se Tamper Protection está ativo."""
+        """Check whether Tamper Protection is on."""
         command = """
         (Get-MpComputerStatus).IsTamperProtected
         """
@@ -122,7 +122,7 @@ class Compatibility:
     @staticmethod
     def get_blocking_processes() -> List[dict]:
         """
-        Retorna processos que podem bloquear operações.
+        Return processes that can block operations.
 
         Returns:
             Lista de dicts com info dos processos.
@@ -143,7 +143,7 @@ class Compatibility:
         Verifica todas as compatibilidades.
 
         Returns:
-            Lista de tuplas (item, status, recomendação)
+            List of (item, status, recommendation) tuples
         """
         issues = []
 
@@ -162,14 +162,14 @@ class Compatibility:
                 "OK"
             ))
 
-        # Antivírus
+        # Antivirus
         antivirus = Compatibility.check_antivirus()
         if antivirus:
             for av in antivirus:
                 issues.append((
-                    "Antivírus",
+                    "Antivirus",
                     av,
-                    "Pode interferir na remoção. Desative temporariamente se houver problemas."
+                    "May interfere with removal. Turn it off temporarily if you hit problems."
                 ))
 
         # Windows Defender
@@ -177,8 +177,8 @@ class Compatibility:
         if realtime_on:
             issues.append((
                 "Windows Defender",
-                "Proteção em tempo real ativa",
-                "Pode bloquear algumas operações"
+                "Real-time protection enabled",
+                "May block some operations"
             ))
 
         # Tamper Protection
@@ -186,7 +186,7 @@ class Compatibility:
             issues.append((
                 "Tamper Protection",
                 "Ativo",
-                "Impede desativação do Defender via script"
+                "Prevents disabling Defender through a script"
             ))
 
         return issues
@@ -206,9 +206,9 @@ class Compatibility:
         success, _, stderr = PowerShell.run(command)
 
         if success:
-            return True, "Proteção em tempo real desativada temporariamente"
+            return True, "Real-time protection temporarily disabled"
         else:
-            return False, f"Não foi possível desativar: {stderr}"
+            return False, f"Could not disable it: {stderr}"
 
     @staticmethod
     def enable_defender() -> Tuple[bool, str]:
@@ -219,13 +219,13 @@ class Compatibility:
         success, _, stderr = PowerShell.run(command)
 
         if success:
-            return True, "Proteção em tempo real reativada"
+            return True, "Real-time protection re-enabled"
         else:
             return False, f"Erro ao reativar: {stderr}"
 
 
 def check_compatibility() -> List[Tuple[str, str, str]]:
-    """Função wrapper para verificação de compatibilidade."""
+    """Wrapper for the compatibility check."""
     return Compatibility.check_compatibility()
 
 
@@ -242,4 +242,4 @@ def fix_compatibility(issue_type: str) -> Tuple[bool, str]:
     if issue_type.lower() == "defender":
         return Compatibility.temporarily_disable_defender()
 
-    return False, f"Correção automática não disponível para: {issue_type}"
+    return False, f"No automatic fix available for: {issue_type}"

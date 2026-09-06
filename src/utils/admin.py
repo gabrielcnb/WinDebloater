@@ -1,5 +1,5 @@
 """
-Utilitários para verificação e elevação de privilégios de administrador.
+Helpers for checking and elevating administrator privileges.
 """
 import ctypes
 import sys
@@ -7,7 +7,7 @@ import os
 
 
 def is_admin() -> bool:
-    """Verifica se o programa está rodando como administrador."""
+    """Check whether the program is running as administrator."""
     try:
         return ctypes.windll.shell32.IsUserAnAdmin() != 0
     except Exception:
@@ -16,13 +16,13 @@ def is_admin() -> bool:
 
 def run_as_admin(script_path: str = None) -> bool:
     """
-    Reinicia o programa com privilégios de administrador.
+    Restart the program with administrator privileges.
 
     Args:
         script_path: Caminho do script a executar. Se None, usa o script atual.
 
     Returns:
-        True se conseguiu iniciar como admin, False caso contrário.
+        True when it managed to start as admin, False otherwise.
     """
     if is_admin():
         return True
@@ -31,7 +31,7 @@ def run_as_admin(script_path: str = None) -> bool:
         script_path = sys.argv[0]
 
     try:
-        # Usa ShellExecute para pedir elevação UAC
+        # Use ShellExecute to trigger the UAC prompt
         params = ' '.join([f'"{arg}"' for arg in sys.argv[1:]])
 
         ctypes.windll.shell32.ShellExecuteW(
@@ -44,20 +44,20 @@ def run_as_admin(script_path: str = None) -> bool:
         )
         return True
     except Exception as e:
-        print(f"Erro ao solicitar privilégios de administrador: {e}")
+        print(f"Failed to request administrator privileges: {e}")
         return False
 
 
 def require_admin():
     """
-    Decorator/função que garante que o código rode como admin.
-    Se não for admin, reinicia o programa pedindo elevação.
+    Ensures the code runs as admin.
+    When it is not admin, restarts the program asking for elevation.
     """
     if not is_admin():
-        print("Este programa requer privilégios de administrador.")
-        print("Solicitando elevação...")
+        print("This program requires administrator privileges.")
+        print("Requesting elevation...")
         if run_as_admin():
             sys.exit(0)  # Sai do processo atual, o novo processo admin vai rodar
         else:
-            print("Não foi possível obter privilégios de administrador.")
+            print("Could not obtain administrator privileges.")
             sys.exit(1)

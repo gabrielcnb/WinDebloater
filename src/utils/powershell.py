@@ -1,5 +1,5 @@
 """
-Wrapper para execução de comandos PowerShell.
+Wrapper around PowerShell command execution.
 """
 import subprocess
 import json
@@ -23,7 +23,7 @@ class PowerShell:
             Tupla (sucesso, stdout, stderr)
         """
         try:
-            # Constrói o comando completo
+            # Build the full command
             full_command = [
                 "powershell.exe",
                 "-NoProfile",
@@ -78,7 +78,7 @@ class PowerShell:
         Returns:
             Tupla (sucesso, dados_parseados)
         """
-        # Adiciona ConvertTo-Json se não tiver
+        # Append ConvertTo-Json when missing
         if "ConvertTo-Json" not in command:
             command = f"({command}) | ConvertTo-Json -Depth 10"
 
@@ -100,7 +100,7 @@ class PowerShell:
         success, data = PowerShell.get_json(command)
 
         if success and data:
-            # Garante que é uma lista
+            # Make sure it is a list
             if isinstance(data, dict):
                 return [data]
             return data
@@ -108,7 +108,7 @@ class PowerShell:
 
     @staticmethod
     def get_processes() -> List[dict]:
-        """Retorna lista de processos em execução."""
+        """Return the list of running processes."""
         command = """
         Get-Process | Select-Object Name, Id,
             @{Name='RAM_MB';Expression={[math]::Round($_.WorkingSet64/1MB,1)}},
@@ -125,7 +125,7 @@ class PowerShell:
 
     @staticmethod
     def get_services() -> List[dict]:
-        """Retorna lista de serviços do Windows."""
+        """Return the list of Windows services."""
         command = "Get-Service | Select-Object Name, DisplayName, Status, StartType | ConvertTo-Json"
         success, data = PowerShell.get_json(command)
 
@@ -137,7 +137,7 @@ class PowerShell:
 
     @staticmethod
     def get_startup_items() -> List[dict]:
-        """Retorna itens de inicialização."""
+        """Return the startup items."""
         command = """
         $items = @()
 
@@ -187,14 +187,14 @@ class PowerShell:
 
     @staticmethod
     def set_service_startup(service_name: str, startup_type: str = "Disabled") -> Tuple[bool, str]:
-        """Altera o tipo de inicialização de um serviço."""
+        """Change a service's startup type."""
         command = f"Set-Service -Name '{service_name}' -StartupType {startup_type} -ErrorAction SilentlyContinue"
         success, stdout, stderr = PowerShell.run(command)
-        return success, stderr if not success else f"Serviço configurado para {startup_type}"
+        return success, stderr if not success else f"Service set to {startup_type}"
 
     @staticmethod
     def stop_service(service_name: str) -> Tuple[bool, str]:
-        """Para um serviço."""
+        """Stop a service."""
         command = f"Stop-Service -Name '{service_name}' -Force -ErrorAction SilentlyContinue"
         success, stdout, stderr = PowerShell.run(command)
-        return success, stderr if not success else "Serviço parado"
+        return success, stderr if not success else "Service stopped"

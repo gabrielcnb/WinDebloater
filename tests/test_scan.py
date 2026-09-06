@@ -1,4 +1,4 @@
-"""Teste rápido do scanner (sem GUI)."""
+"""Quick scanner test, without the GUI."""
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 sys.path.insert(0, 'src')

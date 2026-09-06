@@ -1,5 +1,5 @@
 """
-Sistema de backup e restauração para failsafe.
+Backup and restore system, the failsafe.
 """
 import os
 import sys
@@ -27,7 +27,7 @@ class BackupEntry:
 
 @dataclass
 class RestorePoint:
-    """Ponto de restauração completo."""
+    """A complete restore point."""
     id: str
     name: str
     timestamp: str
@@ -36,7 +36,7 @@ class RestorePoint:
 
 
 class BackupManager:
-    """Gerencia backups e restauração de bloatwares."""
+    """Manages bloatware backups and restores."""
 
     def __init__(self, backup_dir: str = None):
         if backup_dir is None:
@@ -81,10 +81,10 @@ class BackupManager:
         path = backup['path']
         values = backup['values']
 
-        # Cria a chave se não existir
+        # Create the key when missing
         PowerShell.run(f"New-Item -Path '{path}' -Force -ErrorAction SilentlyContinue")
 
-        # Restaura cada valor
+        # Restore each value
         for name, value in values.items():
             if isinstance(value, bool):
                 value_type = "DWord"
@@ -101,7 +101,7 @@ class BackupManager:
 
     def backup_item(self, item: BloatwareItem) -> BackupEntry:
         """
-        Cria backup de um item antes da remoção.
+        Back up an item before removal.
 
         Args:
             item: Item de bloatware a fazer backup.
@@ -111,7 +111,7 @@ class BackupManager:
         """
         registry_backup = {}
 
-        # Faz backup das chaves de registro
+        # Back up the registry keys
         for key in item.registry_keys:
             exported = self._export_registry_key(key)
             if exported:
@@ -131,18 +131,18 @@ class BackupManager:
 
     def create_restore_point(self, description: str = "WinDebloater Backup") -> Optional[RestorePoint]:
         """
-        Cria um ponto de restauração completo.
+        Create a complete restore point.
 
         Args:
-            description: Descrição do ponto de restauração.
+            description: Description of the restore point.
 
         Returns:
-            Ponto de restauração criado.
+            The restore point that was created.
         """
         timestamp = self._get_timestamp()
         point_id = f"restore_{timestamp}"
 
-        # Tenta criar ponto de restauração do Windows
+        # Try creating a Windows restore point
         system_restore_id = None
         command = f"""
         try {{
@@ -157,7 +157,7 @@ class BackupManager:
         if "True" in stdout:
             system_restore_id = timestamp
 
-        # Cria ponto de restauração local
+        # Create a local restore point
         restore_point = RestorePoint(
             id=point_id,
             name=description,
@@ -166,7 +166,7 @@ class BackupManager:
             system_restore_id=system_restore_id
         )
 
-        # Salva em arquivo
+        # Write it to file
         self._save_restore_point(restore_point)
 
         # Limpa entradas atuais
@@ -175,11 +175,11 @@ class BackupManager:
         return restore_point
 
     def _save_restore_point(self, point: RestorePoint):
-        """Salva ponto de restauração em arquivo JSON."""
+        """Write a restore point to a JSON file."""
         filename = f"{point.id}.json"
         filepath = os.path.join(self.backup_dir, filename)
 
-        # Converte para dict
+        # Convert to a dict
         data = {
             'id': point.id,
             'name': point.name,
@@ -192,7 +192,7 @@ class BackupManager:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
     def list_restore_points(self) -> List[RestorePoint]:
-        """Lista todos os pontos de restauração disponíveis."""
+        """List every available restore point."""
         points = []
 
         for filename in os.listdir(self.backup_dir):
@@ -223,13 +223,13 @@ class BackupManager:
 
     def restore(self, point_id: str) -> Dict[str, Any]:
         """
-        Restaura um ponto de restauração.
+        Roll back to a restore point.
 
         Args:
-            point_id: ID do ponto de restauração.
+            point_id: ID of the restore point.
 
         Returns:
-            Dict com resultados da restauração.
+            Dict holding the restore results.
         """
         # Encontra o ponto
         points = self.list_restore_points()
@@ -240,7 +240,7 @@ class BackupManager:
                 break
 
         if not point:
-            return {'success': False, 'message': 'Ponto de restauração não encontrado'}
+            return {'success': False, 'message': 'Restore point not found'}
 
         results = {
             'success': True,
@@ -249,19 +249,19 @@ class BackupManager:
             'message': ''
         }
 
-        # Restaura cada entrada
+        # Restore each entry
         for entry in point.entries:
             try:
-                # Restaura registro
+                # Restore the registry
                 for key, backup in entry.registry_backup.items():
                     self._restore_registry_key(backup)
 
-                # Remove IFEO se foi usado
+                # Remove the IFEO entry when one was used
                 if entry.removal_technique == 'IFEO':
                     ifeo_path = f"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\{entry.item_id}.exe"
                     PowerShell.run(f"Remove-Item -Path '{ifeo_path}' -Force -ErrorAction SilentlyContinue")
 
-                # Tenta reativar serviço se aplicável
+                # Try re-enabling the service where applicable
                 command = f"Set-Service -Name '{entry.item_id}' -StartupType Automatic -ErrorAction SilentlyContinue"
                 PowerShell.run(command)
 
@@ -280,7 +280,7 @@ class BackupManager:
         return results
 
     def delete_restore_point(self, point_id: str) -> bool:
-        """Deleta um ponto de restauração."""
+        """Delete a restore point."""
         filename = f"{point_id}.json"
         filepath = os.path.join(self.backup_dir, filename)
 

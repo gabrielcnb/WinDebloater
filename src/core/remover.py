@@ -1,5 +1,5 @@
 """
-Removedor de bloatware com persistência e múltiplas técnicas.
+Bloatware remover: persistent, with several techniques.
 """
 import time
 import sys
@@ -17,20 +17,20 @@ from utils.powershell import PowerShell
 
 
 class RemovalTechnique(Enum):
-    """Técnicas de remoção em ordem de agressividade."""
-    APPX_USER = "Remove-AppxPackage (usuário)"
+    """Removal techniques, ordered by aggressiveness."""
+    APPX_USER = "Remove-AppxPackage (current user)"
     APPX_ALL_USERS = "Remove-AppxPackage -AllUsers"
     APPX_PROVISIONED = "Remove-AppxProvisionedPackage"
     STOP_SERVICE = "Stop-Service + Disable"
     STOP_PROCESS = "Stop-Process + Startup"
     SCHEDULED_TASKS = "Disable-ScheduledTask"
     IFEO = "Image File Execution Options"
-    RENAME = "Renomear executável"
+    RENAME = "Rename the executable"
 
 
 @dataclass
 class RemovalResult:
-    """Resultado de uma tentativa de remoção."""
+    """Result of one removal attempt."""
     item: BloatwareItem
     success: bool
     technique_used: Optional[RemovalTechnique]
@@ -39,7 +39,7 @@ class RemovalResult:
 
 
 class BloatwareRemover:
-    """Remove bloatware com persistência usando múltiplas técnicas."""
+    """Removes bloatware persistently, using several techniques."""
 
     def __init__(self, backup_manager: Optional[BackupManager] = None):
         self.scanner = BloatwareScanner()
@@ -66,8 +66,8 @@ class BloatwareRemover:
             self._progress_callback(current, total, message)
 
     def _is_still_present(self, item: BloatwareItem) -> bool:
-        """Verifica se o item ainda está presente no sistema."""
-        # Verifica processo
+        """Check whether the item is still present on the system."""
+        # Check the process
         if item.process_name:
             success, stdout, _ = PowerShell.run(
                 f"Get-Process -Name '{item.process_name}' -ErrorAction SilentlyContinue"
@@ -75,7 +75,7 @@ class BloatwareRemover:
             if stdout.strip():
                 return True
 
-        # Verifica pacote AppX
+        # Check the AppX package
         if item.package_name:
             success, stdout, _ = PowerShell.run(
                 f"Get-AppxPackage -Name '{item.package_name}' -ErrorAction SilentlyContinue"
@@ -83,7 +83,7 @@ class BloatwareRemover:
             if stdout.strip():
                 return True
 
-        # Verifica serviço
+        # Check the service
         if item.service_name:
             success, stdout, _ = PowerShell.run(
                 f"Get-Service -Name '{item.service_name}' -ErrorAction SilentlyContinue | Where-Object {{$_.Status -eq 'Running'}}"
@@ -94,17 +94,17 @@ class BloatwareRemover:
         return False
 
     def _try_appx_user(self, item: BloatwareItem) -> bool:
-        """Tenta remover pacote AppX para usuário atual."""
+        """Try removing the AppX package for the current user."""
         if not item.package_name:
             return False
 
-        self._log(f"  Tentando Remove-AppxPackage (usuário)...")
+        self._log(f"  Trying Remove-AppxPackage (current user)...")
         success, _ = PowerShell.remove_appx_package(item.package_name, all_users=False)
         time.sleep(0.5)
         return success and not self._is_still_present(item)
 
     def _try_appx_all_users(self, item: BloatwareItem) -> bool:
-        """Tenta remover pacote AppX para todos usuários."""
+        """Try removing the AppX package for all users."""
         if not item.package_name:
             return False
 
@@ -129,7 +129,7 @@ class BloatwareRemover:
         return success
 
     def _try_stop_service(self, item: BloatwareItem) -> bool:
-        """Tenta parar e desativar serviço."""
+        """Try stopping and disabling the service."""
         if not item.service_name:
             return False
 
@@ -149,7 +149,7 @@ class BloatwareRemover:
         # Encerra processo
         PowerShell.stop_process(item.process_name)
 
-        # Remove do startup
+        # Drop it from startup
         for key in item.registry_keys:
             if "Run" in key:
                 PowerShell.run(f"Remove-ItemProperty -Path '{key}' -Name '*{item.process_name}*' -ErrorAction SilentlyContinue")
@@ -179,7 +179,7 @@ class BloatwareRemover:
         if not item.process_name:
             return False
 
-        self._log(f"  Tentando IFEO (bloquear executável)...")
+        self._log(f"  Trying IFEO (block the executable)...")
 
         exe_name = f"{item.process_name}.exe"
         command = f"""
@@ -197,13 +197,13 @@ class BloatwareRemover:
         return success and not self._is_still_present(item)
 
     def _try_rename(self, item: BloatwareItem) -> bool:
-        """Último recurso: renomear o executável."""
+        """Last resort: rename the executable."""
         if not item.process_name:
             return False
 
-        self._log(f"  Tentando renomear executável (último recurso)...")
+        self._log(f"  Trying to rename the executable (last resort)...")
 
-        # Tenta encontrar e renomear o executável
+        # Try to locate and rename the executable
         command = f"""
         $exes = Get-ChildItem -Path "$env:ProgramFiles", "$env:ProgramFiles(x86)", "$env:SystemRoot" -Recurse -Filter "{item.process_name}.exe" -ErrorAction SilentlyContinue | Select-Object -First 3
         foreach ($exe in $exes) {{
@@ -220,25 +220,25 @@ class BloatwareRemover:
 
     def remove_single(self, item: BloatwareItem, create_backup: bool = True) -> RemovalResult:
         """
-        Remove um único item de bloatware usando técnicas em cascata.
+        Remove a single bloatware item, cascading through the techniques.
 
         Args:
             item: Item a remover.
             create_backup: Se deve criar backup antes.
 
         Returns:
-            Resultado da remoção.
+            The removal result.
         """
         self._log(f"\n{'='*50}")
         self._log(f"Removendo: {item.name}")
         self._log(f"{'='*50}")
 
-        # Cria backup se solicitado
+        # Take a backup when asked
         if create_backup:
             self._log("Criando backup...")
             self.backup.backup_item(item)
 
-        # Lista de técnicas para tentar
+        # Techniques to try, in order
         techniques = [
             (RemovalTechnique.APPX_USER, self._try_appx_user),
             (RemovalTechnique.APPX_ALL_USERS, self._try_appx_all_users),
@@ -267,19 +267,19 @@ class BloatwareRemover:
             except Exception as e:
                 self._log(f"  Erro: {str(e)}")
 
-        # Nenhuma técnica funcionou
-        self._log(f"✗ Falha: Todas as técnicas falharam")
+        # Nothing worked
+        self._log(f"✗ Failed: every technique failed")
         return RemovalResult(
             item=item,
             success=False,
             technique_used=None,
-            message="Todas as técnicas falharam",
+            message="Every technique failed",
             attempts=attempts
         )
 
     def remove_multiple(self, items: List[BloatwareItem], create_backup: bool = True) -> List[RemovalResult]:
         """
-        Remove múltiplos itens de bloatware.
+        Remove several bloatware items.
 
         Args:
             items: Lista de itens a remover.
@@ -291,14 +291,14 @@ class BloatwareRemover:
         results = []
         total = len(items)
 
-        # Cria backup geral
+        # Take an overall backup
         if create_backup:
-            self._log("Criando backup geral antes da remoção...")
+            self._log("Creating an overall backup before removal...")
             self.backup.create_restore_point(f"WinDebloater - Removendo {total} itens")
 
         for i, item in enumerate(items, 1):
             self._progress(i, total, f"Removendo {item.name}...")
-            result = self.remove_single(item, create_backup=False)  # Já fez backup geral
+            result = self.remove_single(item, create_backup=False)  # the overall backup is already done
             results.append(result)
 
         # Resumo

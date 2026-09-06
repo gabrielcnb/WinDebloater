@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
 
-:: Verifica se está rodando como admin
+:: Check whether we are running as admin
 net session >nul 2>&1
 if %errorlevel% neq 0 (
-    echo Solicitando privilégios de administrador...
+    echo Requesting administrator privileges...
     powershell -Command "Start-Process '%~f0' -Verb RunAs"
     exit /b
 )
